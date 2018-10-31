@@ -54,7 +54,7 @@ CONFIG = {
     "QueueDefinitions": {
         "Location": "File", # Options: File, Web, SharePoint
         "Type": "csv", # Options: csv, json
-        "Path": "/path/to/queue/definitions.json"
+        "Path": "/path/to/queue/definitions.csv"
     },
     "JamfAPI": { # Only necessary if 'Jamf' selected above
         "URL": "https://your.jamfserver.com:8443/JSSResource",
