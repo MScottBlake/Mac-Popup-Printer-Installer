@@ -1,0 +1,49 @@
+{
+    "Printer1": {
+        "PrinterName": "Printer1",
+        "DisplayName": "Printer 1",
+        "Driver": "/Library/Printers/PPDs/Contents/Resources/KONICAMINOLTAC364e.gz",
+        "URI": "smb://some.printserver.com/Printer1",
+        "DriverInstaller": "InstallKonicaDrivers",
+        "Location": "Building1-Rm 123",
+        "ADFilterGroup": "PrinterGroup-Printer1",
+        "Options": {
+            "printer-is-shared": "false",
+            "auth-info-required": "negotiate",
+            "Finisher": "FS534",
+            "PaperSources": "PC110"
+        }
+    },
+    "Printer2": {
+        "PrinterName": "Printer2",
+        "DisplayName": "Printer 2",
+        "Driver": "/Library/Printers/PPDs/Contents/Resources/RICOH Aficio MP C3002.gz",
+        "URI": "ipp://10.1.2.3",
+        "DriverInstaller": "InstallRicohDrivers",
+        "Location": "Building1-Rm 456",
+        "ADFilterGroup": "",
+        "Options": {
+            "ColorModel": "Gray",
+            "Finisher": "FinKINGB",
+            "ImageableArea": "Letter",
+            "PageRegion": "Letter",
+            "PageSize": "Letter",
+            "PaperDimension": "Letter",
+            "printer-is-shared": "false",
+            "auth-info-required": "negotiate"
+        }
+    },
+    "Printer3": {
+        "PrinterName": "Printer3",
+        "DisplayName": "Printer 3",
+        "Driver": "",
+        "URI": "lpd://another.printserver.com/Printer3",
+        "DriverInstaller": "",
+        "Location": "Building2-Rm 789",
+        "ADFilterGroup": "PrinterGroup-Printer3",
+        "Options": {
+            "printer-is-shared": "false",
+            "auth-info-required": "negotiate"
+        }
+    }
+}

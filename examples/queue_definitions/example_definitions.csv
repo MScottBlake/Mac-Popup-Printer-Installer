@@ -1,0 +1,4 @@
+PrinterName,DisplayName,URI,Driver,DriverInstaller,Location,Options,ADFilterGroup
+Printer1,"Printer 1",smb://some.printserver.com/Printer1,/Library/Printers/PPDs/Contents/Resources/KONICAMINOLTAC364e.gz,InstallKonicaDrivers,"Building1-Rm 123","printer-is-shared=false auth-info-required=negotiate Finisher=FS534 PaperSources=PC110",PrinterGroup-Printer1
+Printer2,"Printer 2",ipp://10.1.2.3,/Library/Printers/PPDs/Contents/Resources/RICOH Aficio MP C3002.gz,InstallRicohDrivers,"Building1-Rm 456","ColorModel=Gray Finisher=FinKINGB ImageableArea=Letter PageRegion=Letter PageSize=Letter PaperDimension=Letter printer-is-shared=false auth-info-required=negotiate",
+Printer3,"Printer 3",lpd://another.printserver.com/Printer3,,,"Building2-Rm 789","printer-is-shared=false auth-info-required=negotiate",PrinterGroup-Printer3
