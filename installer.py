@@ -342,19 +342,8 @@ def get_queue_definitions_csv():
 
     if queue_location == "file":
         f = open(CONFIG.get('QueueDefinitions').get('Path'), 'r')
-
-        lines = {}
-        for line in csv.DictReader(f):
-            if line['Options']:
-                opts = dict(item.split('=') for item in line['Options'].split(' '))
-                line['Options'] = opts
-            lines[line['PrinterName']] = line
-
-        data = json.dumps(lines, sort_keys=True, indent=4, separators=(',', ': '))
-        f.close()
     elif queue_location == "web":
-        # TODO: Get csv queue definitions via web
-        pass
+        f = urllib2.urlopen(CONFIG.get('QueueDefinitions').get('Path'))
     elif queue_location == "sharepoint":
         # TODO: Get csv queue definitions via sharepoint
         pass
@@ -363,6 +352,16 @@ def get_queue_definitions_csv():
                      "'web', or 'sharepoint'. Received '%s'", queue_location)
         raise ValueError("Invalid queue definition location. Expected 'file', "
                          "'web', or 'sharepoint'. Received '"+queue_location+"'")
+
+    lines = {}
+    for line in csv.DictReader(f):
+        if line['Options']:
+            opts = dict(item.split('=') for item in line['Options'].split(' '))
+            line['Options'] = opts
+        lines[line['PrinterName']] = line
+
+    data = json.dumps(lines, sort_keys=True, indent=4, separators=(',', ': '))
+    f.close()
 
     return json.loads(data)
 
@@ -376,12 +375,8 @@ def get_queue_definitions_json():
 
     if queue_location == "file":
         f = open(CONFIG.get('QueueDefinitions').get('Path'), 'r')
-        data = json.loads(f.read())
-        data = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
-        f.close()
     elif queue_location == "web":
-        # TODO: Get json queue definitions via web
-        pass
+        f = urllib2.urlopen(CONFIG.get('QueueDefinitions').get('Path'))
     elif queue_location == "sharepoint":
         # TODO: Get json queue definitions via sharepoint
         pass
@@ -390,6 +385,10 @@ def get_queue_definitions_json():
                      "'web', or 'sharepoint'. Received '%s'", queue_location)
         raise ValueError("Invalid queue definition location. Expected 'file', "
                          "'web', or 'sharepoint'. Received '"+queue_location+"'")
+
+    data = json.loads(f.read())
+    data = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+    f.close()
 
     return json.loads(data)
 
