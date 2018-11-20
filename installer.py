@@ -37,7 +37,7 @@ __version__ = "0.1.0"
 
 CONFIG = {
     "Dialog": {
-        "Application": "Pashua", # Options: Pashua or cocoaDialog
+        "Application": "cocoaDialog", # Options: Pashua or cocoaDialog
         "Title": "Printer Installer",
         "LookupMethod": {
             "Kerberos": False, # Tried first, if enabled
@@ -53,7 +53,7 @@ CONFIG = {
         "Path": "/Library/Logs/printer_installer.log"
     },
     "QueueDefinitions": {
-        "Location": "File", # Options: File, Web, SharePoint
+        "Location": "File", # Options: File, Web
         "Type": "csv", # Options: csv, json
         "Path": "examples/queue_definitions/example_definitions.csv"
     },
@@ -344,14 +344,11 @@ def get_queue_definitions_csv():
         f = open(CONFIG.get('QueueDefinitions').get('Path'), 'r')
     elif queue_location == "web":
         f = urllib2.urlopen(CONFIG.get('QueueDefinitions').get('Path'))
-    elif queue_location == "sharepoint":
-        # TODO: Get csv queue definitions via sharepoint
-        pass
     else:
-        LOGGER.error("Invalid queue definition location. Expected 'file', "
-                     "'web', or 'sharepoint'. Received '%s'", queue_location)
-        raise ValueError("Invalid queue definition location. Expected 'file', "
-                         "'web', or 'sharepoint'. Received '"+queue_location+"'")
+        LOGGER.error("Invalid queue definition location. Expected 'file' or"
+                     " 'web'. Received '%s'", queue_location)
+        raise ValueError("Invalid queue definition location. Expected 'file' or"
+                         " 'web'. Received '"+queue_location+"'")
 
     lines = {}
     for line in csv.DictReader(f):
@@ -377,14 +374,11 @@ def get_queue_definitions_json():
         f = open(CONFIG.get('QueueDefinitions').get('Path'), 'r')
     elif queue_location == "web":
         f = urllib2.urlopen(CONFIG.get('QueueDefinitions').get('Path'))
-    elif queue_location == "sharepoint":
-        # TODO: Get json queue definitions via sharepoint
-        pass
     else:
-        LOGGER.error("Invalid queue definition location. Expected 'file', "
-                     "'web', or 'sharepoint'. Received '%s'", queue_location)
-        raise ValueError("Invalid queue definition location. Expected 'file', "
-                         "'web', or 'sharepoint'. Received '"+queue_location+"'")
+        LOGGER.error("Invalid queue definition location. Expected 'file' or"
+                     " 'web'. Received '%s'", queue_location)
+        raise ValueError("Invalid queue definition location. Expected 'file' or"
+                         " 'web'. Received '"+queue_location+"'")
 
     data = json.loads(f.read())
     data = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))

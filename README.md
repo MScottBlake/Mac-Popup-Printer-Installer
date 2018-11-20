@@ -6,8 +6,6 @@ Please open an issue if you find anything that isn't working as intended. Pull r
 
 ## To Do
 - Get csv queue definitions via web
-- Get csv queue definitions via sharepoint
 - Get json queue definitions via web
-- Get json queue definitions via sharepoint
 - Install driver via file
 - Install driver via web
