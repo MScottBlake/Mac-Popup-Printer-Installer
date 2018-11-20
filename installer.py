@@ -11,6 +11,7 @@ on FoundationPlist.py.
 '''
 
 import argparse
+import base64
 import csv
 import json
 import logging
@@ -19,7 +20,7 @@ import Queue
 import subprocess
 import sys
 import threading
-import requests
+import urllib2
 
 # PyLint cannot properly find names inside Cocoa libraries, so issues bogus
 # No name 'Foo' in module 'Bar' warnings. Disable them.
@@ -515,20 +516,13 @@ def jamf_get_ldap_server_ids(username):
     """Returns a list of LDAP Server IDs from Jamf Pro"""
     if not DATA_CACHE.get('jamf_ldap_servers'):
         LOGGER.info('Gathering list of usable LDAP servers')
+        jamf_handler = jamf_api_handler()
 
-        requests_headers = {'Accept': 'application/json'}
-        requests_auth = requests.auth.HTTPBasicAuth(
-            CONFIG.get('JamfAPI').get('Username'),
-            CONFIG.get('JamfAPI').get('Password')
+        ldap_servers_request = jamf_handler.open(
+            '%s/ldapservers' % (CONFIG.get('JamfAPI').get('URL'))
         )
 
-        ldap_servers_request = requests.get(
-            '%s/ldapservers' % (CONFIG.get('JamfAPI').get('URL')),
-            auth=requests_auth,
-            headers=requests_headers
-        )
         ldap_servers = []
-
         for ldap_server in ldap_servers_request.json().get('ldap_servers'):
             if ldap_server.get('id'):
                 url = '%s/ldapservers/id/%s/user/%s' % (
@@ -537,8 +531,7 @@ def jamf_get_ldap_server_ids(username):
                     username
                 )
 
-                ldap_user_request = requests.get(
-                    url, auth=requests_auth, headers=requests_headers).json()
+                ldap_user_request = jamf_handler.open(url).json()
                 for ldap_user in ldap_user_request.get('ldap_users'):
                     if ldap_user.get('username') == username:
                         ldap_servers.append(ldap_server.get('id'))
@@ -549,6 +542,22 @@ def jamf_get_ldap_server_ids(username):
         DATA_CACHE['jamf_ldap_servers'] = ldap_servers
 
     return DATA_CACHE.get('jamf_ldap_servers')
+
+
+def jamf_api_handler():
+    '''Returns a urllib2 handler for use with the Jamf API'''
+    handler = urllib2.build_opener()
+    credentials = '%s:%s' % (
+        CONFIG.get('JamfAPI').get('Username'),
+        CONFIG.get('JamfAPI').get('Password')
+    )
+
+    handler.addheaders = [
+        ('Accept', 'application/json'),
+        ('Authorization', b'Basic %s' % base64.b64encode(credentials).strip())
+    ]
+
+    return handler
 
 
 def jamf_run_policy(event):
@@ -584,18 +593,13 @@ def jamf_worker(args, ldap_servers):
                 THREAD_QUEUE.task_done()
                 continue
 
-            # Skip if a filter group is configured for this printer and the user is
-            # not a member of the group
+            # Skip if a filter group is configured for this printer and the
+            # user is not a member of the group
             if not queue.get('ADFilterGroup'):
                 THREAD_QUEUE.task_done()
                 continue
 
-            requests_headers = {'Accept': 'application/json'}
-            requests_auth = requests.auth.HTTPBasicAuth(
-                CONFIG.get('JamfAPI').get('Username'),
-                CONFIG.get('JamfAPI').get('Password')
-            )
-
+            jamf_handler = jamf_api_handler()
             for ldap_server in ldap_servers:
                 url = '%s/ldapservers/id/%d/group/%s/user/%s' % (
                     CONFIG.get('JamfAPI').get('URL'),
@@ -604,8 +608,7 @@ def jamf_worker(args, ldap_servers):
                     args.username
                 )
 
-                ldap_usergroup_request = requests.get(
-                    url, auth=requests_auth, headers=requests_headers).json()
+                ldap_usergroup_request = jamf_handler.open(url).json()
                 for usergroup in ldap_usergroup_request.get('ldap_users'):
                     if usergroup.get('is_member') == "Yes":
                         THREAD_DATA.append(queue.get('PrinterName'))
